@@ -173,9 +173,9 @@ export default function TicketPreviewScreen() {
         <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ColorBar }]}>
           {/* ✅ FIXED: Width is now applied here so it centers correctly */}
           <View style={[styles.colorBarContainer, { width: '85%', opacity: blink ? 1 : 0 }]}> 
-             <View style={{ flex: 1, backgroundColor: '#D0D5D8' }} />
-             <View style={{ flex: 1, backgroundColor: '#3E8E93' }} />
-             <View style={{ flex: 1, backgroundColor: '#7B7BC0' }} />
+             <View style={{ flex: 1, backgroundColor: '#E35237' }} />
+             <View style={{ flex: 1, backgroundColor: '#EDE6F2' }} />
+             <View style={{ flex: 1, backgroundColor: '#934598' }} />
           </View>
         </View>
 
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   qrFrame: {
     borderRadius: 18,
     borderWidth: 9,
-    borderColor: '#5CB55C',
+    borderColor: '#A0A0A0',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
