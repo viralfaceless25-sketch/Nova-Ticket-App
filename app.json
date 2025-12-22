@@ -25,13 +25,14 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
-        "meta": {
+      "backgroundColor": "#4275C4", 
+      "meta": {
         "apple": {
           "mobileWebAppCapable": "yes",
           "mobileWebAppStatusBarStyle": "black-translucent"
         }
       }
-    },
+    }, 
     "plugins": [
       "expo-router",
       [

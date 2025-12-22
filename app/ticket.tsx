@@ -5,55 +5,58 @@ import { Dimensions, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 
 import QRCode from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// Get Device Dimensions for Adaptive Scaling
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 // ============================================================================
-// 🎛️ CONTROL PANEL (LAYOUT CONFIGURATION)
+// 🎛️ ADAPTIVE CONTROL PANEL
+// Values are now percentages (0.0 to 1.0) relative to Screen or Card size
 // ============================================================================
 
 const LAYOUT_CONFIG = {
   // --- LAYER 1: BLUE HEADER ---
-  header_Height: 321,            // Height of the blue background in pixels
-  header_Roundness: 12,          // Roundness of bottom corners
-  header_Color: '#4275C4',       // The exact blue color
+  header_Height: SCREEN_HEIGHT * 0.38,   // 38% of screen height
+  header_Roundness: 12,
+  header_Color: '#4a86e1ff',
 
   // --- LAYER 2: FLOATING CARD ---
-  card_SideMargin: 21,           // Space from left/right edges
-  card_TopOffset: 94,            // Distance from TOP of screen
-  card_Height: 687,              // Total height of the white card
+  card_SideMargin: 21,
+  card_TopOffset: SCREEN_HEIGHT * 0.11,  // Starts 11% down from top
+  card_Height: SCREEN_HEIGHT * 0.81,     // Takes up 81% of screen height
   
-  // --- ELEMENT POSITIONS (Y-Axis from Top of Card) ---
-  y_QrCode: 19,                  // Green QR Box position
-  y_TapToEnlarge: 197,           // "Tap to enlarge" text
-  y_DottedLine: 218,             // Dotted line (Should approx match header_Height - card_TopOffset)
+  // --- ELEMENT POSITIONS (Percentage of CARD HEIGHT) ---
+  // Calculated from your previous pixel values (e.g. 19px / 687px = 0.028)
+  y_QrCode: 0.028,       
+  y_TapToEnlarge: 0.287, 
+  y_DottedLine: 0.317,   
   
-  y_Interstate: 228,             // "INTERSTATE"
-  y_BigNumber: 269,              // "3"
-  y_ZoneRide: 355,               // "ZONE RIDE"
-  y_Passenger: 386,              // "1 Adult"
+  y_Interstate: 0.332,   
+  y_BigNumber: 0.392,    
+  y_ZoneRide: 0.517,     
+  y_Passenger: 0.562,    
   
-  y_ColorBar: 567,               // Tricolor Bar
-  y_ProgressBar: 598,            // Grey/Blue expiration bar
-  y_ExpiresText: 620,            // "Expires in..."
-  y_Instructions: 669,           // Bottom link text
+  y_ColorBar: 0.825,     
+  y_ProgressBar: 0.870,  
+  y_ExpiresText: 0.902,  
+  y_Instructions: 0.974, 
 
-  // --- SIZES ---
-  qr_Size: 151,                  // Size of the QR Code (Green box is slightly larger)
-  size_Interstate: 36,           // Font size
-  size_BigNumber: 70,            // Font size
-  size_ZoneRide: 22,             // Font size
-  size_Passenger: 20,            // Font size
-  size_Expires: 22,              // Font size
+  // --- SIZES (Percentage of SCREEN WIDTH) ---
+  // Ensures text/QR doesn't get cut off on narrower phones
+  qr_Size: SCREEN_WIDTH * 0.38,          
+  size_Interstate: SCREEN_WIDTH * 0.09,  
+  size_BigNumber: SCREEN_WIDTH * 0.18,   
+  size_ZoneRide: SCREEN_WIDTH * 0.056,   
+  size_Passenger: SCREEN_WIDTH * 0.051,  
+  size_Expires: SCREEN_WIDTH * 0.056,    
 };
 
 // ============================================================================
 // ⚠️ LOGIC BELOW
 // ============================================================================
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// 🛠️ QR GENERATION LOGIC (ADDED)
-// Adds padding to force a dense grid
+// 🛠️ QR GENERATION LOGIC
 const generateDenseQRData = (baseString: string) => {
-  const padding = 'X'.repeat(220); // 220 'X' characters
+  const padding = 'X'.repeat(220); 
   return `${baseString}|${padding}`;
 };
 
@@ -79,16 +82,15 @@ export default function TicketPreviewScreen() {
   const totalDuration = 60 * 60; 
   const progressPercent = Math.min(100, Math.max(0, ((totalDuration - timeLeft) / totalDuration) * 100));
 
-  // Calculate Card Width explicitly to prevent layout breaking
+  // Calculate Card Width
   const cardWidth = SCREEN_WIDTH - (LAYOUT_CONFIG.card_SideMargin * 2);
-
-  // Generate the dense data string (ADDED)
   const qrValue = generateDenseQRData("NJ_TRANSIT_TICKET_DATA");
 
   return (
     <View style={styles.mainContainer}>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar barStyle="light-content" />
+      {/* Translucent status bar to prevent black bar issue */}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
       {/* --- LAYER 1: Blue Header --- */}
       <View style={[styles.blueHeader, { 
@@ -96,9 +98,10 @@ export default function TicketPreviewScreen() {
         backgroundColor: LAYOUT_CONFIG.header_Color,
         borderBottomLeftRadius: LAYOUT_CONFIG.header_Roundness,
         borderBottomRightRadius: LAYOUT_CONFIG.header_Roundness,
+        // Add padding top for the notch
+        paddingTop: insets.top, 
       }]}>
-        {/* Navigation Bar (Inside SafeArea) */}
-        <View style={[styles.navBar, { marginTop: insets.top }]}>
+        <View style={styles.navBar}>
           <TouchableOpacity onPress={() => router.back()} style={styles.navIcon}>
              <Ionicons name="chevron-back" size={28} color="white" />
           </TouchableOpacity>
@@ -116,62 +119,60 @@ export default function TicketPreviewScreen() {
       }]}>
         
         {/* QR Code */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_QrCode }]}> 
+        {/* Note: We multiply card_Height by the percentage to get the Y position */}
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_QrCode }]}> 
           <View style={[styles.qrFrame, { 
             width: LAYOUT_CONFIG.qr_Size + 26, 
             height: LAYOUT_CONFIG.qr_Size + 28 
           }]}>
             <View style={[styles.qrInnerWhite, { padding: 2 }]}>
-              {/* ✅ UPDATED QR COMPONENT */}
               <QRCode 
                 value={qrValue} 
                 size={LAYOUT_CONFIG.qr_Size} 
-                ecl="L"       // Matches Swift "L" correction
-                quietZone={0} // Minimal padding, similar to crop
+                ecl="L"       
+                quietZone={0} 
               />
             </View>
           </View>
         </View>
 
         {/* Tap Text */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_TapToEnlarge }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_TapToEnlarge }]}>
           <Text style={styles.tapText}>Tap to enlarge</Text>
         </View>
 
         {/* Dotted Line */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_DottedLine, width: '100%', paddingHorizontal: 20 }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_DottedLine, width: '100%', paddingHorizontal: 20 }]}>
            <View style={styles.dottedLine} />
         </View>
 
         {/* DETAILS */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_Interstate }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_Interstate }]}>
           <Text style={[styles.interstateText, { fontSize: LAYOUT_CONFIG.size_Interstate }]}>
             INTERSTATE
           </Text>
         </View>
 
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_BigNumber }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_BigNumber }]}>
           <Text style={[styles.bigNumberText, { fontSize: LAYOUT_CONFIG.size_BigNumber }]}>
             3
           </Text>
         </View>
 
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ZoneRide }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_ZoneRide }]}>
           <Text style={[styles.zoneRideText, { fontSize: LAYOUT_CONFIG.size_ZoneRide }]}>
             ZONE RIDE
           </Text>
         </View>
 
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_Passenger }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_Passenger }]}>
           <Text style={[styles.passengerText, { fontSize: LAYOUT_CONFIG.size_Passenger }]}>
             1 Adult
           </Text>
         </View>
 
         {/* FOOTER */}
-        {/* Tri-Color Bar */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ColorBar }]}>
-          {/* ✅ FIXED: Width is now applied here so it centers correctly */}
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_ColorBar }]}>
           <View style={[styles.colorBarContainer, { width: '85%', opacity: blink ? 1 : 0 }]}> 
              <View style={{ flex: 1, backgroundColor: '#E35237' }} />
              <View style={{ flex: 1, backgroundColor: '#EDE6F2' }} />
@@ -179,21 +180,19 @@ export default function TicketPreviewScreen() {
           </View>
         </View>
 
-        {/* Progress Bar */}
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ProgressBar }]}>
-          {/* ✅ FIXED: Width is now applied here */}
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_ProgressBar }]}>
           <View style={[styles.progressBarBg, { width: '85%' }]}>
             <View style={[styles.progressBarFill, { width: `${progressPercent}%`, backgroundColor: LAYOUT_CONFIG.header_Color }]} />
           </View>
         </View>
 
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ExpiresText }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_ExpiresText }]}>
           <Text style={[styles.expiresText, { fontSize: LAYOUT_CONFIG.size_Expires }]}>
             Expires in <Text style={{fontWeight: '900'}}>{timeString}</Text>
           </Text>
         </View>
 
-        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_Instructions }]}>
+        <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.card_Height * LAYOUT_CONFIG.y_Instructions }]}>
           <TouchableOpacity>
             <Text style={styles.linkText}>View Onboard Validator Instructions</Text>
           </TouchableOpacity>
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-    height: 30,
+    height: 31, // Increased slightly for better touch area
   },
   navTitle: {
     color: 'white',
@@ -229,7 +228,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   navIcon: {
-    width: 30,
+    width: 28,
     alignItems: 'center',
   },
   cardContainer: {
@@ -237,7 +236,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     zIndex: 10,
-    // Shadows
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -274,12 +272,12 @@ const styles = StyleSheet.create({
     width: '97%',
     borderStyle: 'dashed',
     borderWidth: 1,
-    borderColor: '#D3D3D3', // Light Grey
+    borderColor: '#D3D3D3',
     borderRadius: 1,
   },
   interstateText: {
     fontWeight: '900',
-    color: '#f83026ff', // Red
+    color: '#f83026ff',
     letterSpacing: 0.5,
   },
   bigNumberText: {
