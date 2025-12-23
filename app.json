@@ -25,12 +25,13 @@
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png",
-      "backgroundColor": "#4275C4", 
+      "backgroundColor": "#4a86e1", 
       "meta": {
         "apple": {
           "mobileWebAppCapable": "yes",
           "mobileWebAppStatusBarStyle": "black-translucent"
-        }
+        },
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
       }
     }, 
     "plugins": [

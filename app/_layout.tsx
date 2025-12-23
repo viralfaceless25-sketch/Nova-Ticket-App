@@ -4,12 +4,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
   return (
-    // ✅ FIX: Wrap the entire app in SafeAreaProvider
     <SafeAreaProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
       </Stack>
-      <StatusBar style="auto" />
+      {/* ✅ Change style to "light" so time/battery are white on the blue header */}
+      <StatusBar style="light" /> 
     </SafeAreaProvider>
   );
 }
