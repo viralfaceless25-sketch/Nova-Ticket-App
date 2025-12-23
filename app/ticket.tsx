@@ -168,9 +168,9 @@ ZONE RIDE
 <View style={[styles.centeredItem, { top: LAYOUT_CONFIG.y_ColorBar }]}>
 {/* ✅ FIXED: Width is now applied here so it centers correctly */}
 <View style={[styles.colorBarContainer, { width: '85%', opacity: blink ? 1 : 0 }]}>
-<View style={{ flex: 1, backgroundColor: '#E35237' }} />
-<View style={{ flex: 1, backgroundColor: '#EDE6F2' }} />
-<View style={{ flex: 1, backgroundColor: '#934598' }} />
+<View style={{ flex: 1, backgroundColor: '#D50000' }} />
+<View style={{ flex: 1, backgroundColor: '#FF1493' }} />
+<View style={{ flex: 1, backgroundColor: '#22223B' }} />
 </View>
 </View>
 
@@ -249,7 +249,7 @@ justifyContent: 'center',
 qrFrame: {
 borderRadius: 18,
 borderWidth: 9,
-borderColor: '#A0A0A0',
+borderColor: '#FFC0CB',
 justifyContent: 'center',
 alignItems: 'center',
 backgroundColor: 'white',
